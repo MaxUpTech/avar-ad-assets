@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Avar ad template</title>
+<style>
+/* Rubik (OFL, self-hosted). Hebrew + Latin, plus Arabic for the later Levantine market. */
+@font-face{font-family:Rubik;font-weight:400;src:url(fonts/rubik-hebrew-400-normal.woff2) format('woff2');unicode-range:U+0307-0308,U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F}
+@font-face{font-family:Rubik;font-weight:500;src:url(fonts/rubik-hebrew-500-normal.woff2) format('woff2');unicode-range:U+0307-0308,U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F}
+@font-face{font-family:Rubik;font-weight:700;src:url(fonts/rubik-hebrew-700-normal.woff2) format('woff2');unicode-range:U+0307-0308,U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F}
+@font-face{font-family:Rubik;font-weight:800;src:url(fonts/rubik-hebrew-800-normal.woff2) format('woff2');unicode-range:U+0307-0308,U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F}
+@font-face{font-family:Rubik;font-weight:900;src:url(fonts/rubik-hebrew-900-normal.woff2) format('woff2');unicode-range:U+0307-0308,U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F}
+@font-face{font-family:Rubik;font-weight:400;src:url(fonts/rubik-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Rubik;font-weight:500;src:url(fonts/rubik-latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Rubik;font-weight:700;src:url(fonts/rubik-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Rubik;font-weight:800;src:url(fonts/rubik-latin-800-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Rubik;font-weight:900;src:url(fonts/rubik-latin-900-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Rubik;font-weight:400;src:url(fonts/rubik-arabic-400-normal.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:Rubik;font-weight:500;src:url(fonts/rubik-arabic-500-normal.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:Rubik;font-weight:700;src:url(fonts/rubik-arabic-700-normal.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:Rubik;font-weight:800;src:url(fonts/rubik-arabic-800-normal.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+@font-face{font-family:Rubik;font-weight:900;src:url(fonts/rubik-arabic-900-normal.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
+
+/* Brand tokens */
+:root{--green:#55D8CB;--ink:#222222;--mint:#E7F9F6;--teal:#2BA89A;--screen:#FAFAFA;--card:#FFFFFF;--orange:#EE7E38}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#ffffff}
+body{font-family:Rubik,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+
+.canvas{position:relative;width:1080px;overflow:hidden;background:var(--screen);display:flex;flex-direction:column}
+.logo{position:absolute;left:var(--side);top:var(--top);width:var(--logo);height:var(--logo);object-fit:contain;z-index:2}
+
+/* scene layout: text top-right, scene band, one CTA unit */
+.scene{padding:var(--top) var(--side) var(--bottom)}
+.scene .text{padding-left:calc(var(--logo) + 40px);text-align:right;min-height:var(--logo)}
+.hook{font-weight:900;line-height:1.06;letter-spacing:-0.4px}
+.hook .l{display:block;white-space:nowrap}
+.context{font-weight:700;line-height:1.22}
+.details{font-weight:500;line-height:1.25}
+.band{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;padding:var(--bandpad) 0;margin:0 calc(var(--side) * -1)}
+.band img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+
+/* the single CTA unit */
+.cta{display:flex;flex-direction:column;align-items:center;gap:var(--ctagap);flex:0 0 auto}
+.pill{background:var(--green);color:var(--ink);font-weight:800;border-radius:999px;line-height:1;white-space:nowrap}
+.pill.dark{background:var(--ink);color:#ffffff}
+.badges{display:flex;direction:ltr;gap:18px;align-items:center}
+.badges img{display:block;height:var(--badge);width:auto}
+.legal{font-weight:400;opacity:.8;white-space:nowrap}
+
+/* split (billboard) layout: two-color story */
+.split .half{position:relative;display:flex;flex-direction:column;padding:0 var(--side)}
+.split .bg-orange{background:var(--orange)}
+.split .bg-green{background:var(--green)}
+.split .big{font-weight:900;line-height:1.02;text-align:right;letter-spacing:-0.6px}
+.split .big .l{display:block;white-space:nowrap}
+.split .top{justify-content:center}
+.split .bottom{justify-content:flex-start}
+
+.tag{position:absolute;left:14px;bottom:12px;font:700 16px Rubik,sans-serif;color:#ffffff;background:#d6007a;padding:5px 12px;border-radius:6px;direction:ltr;z-index:5}
+.measure{position:absolute;visibility:hidden;white-space:nowrap;left:-9999px;top:0}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// Injected by render.py: window.__SPEC__ = {format, layout, hook[], context, details, top[], bottom[], top_color, scene, assets{}, legal}
+const FMT = {
+  '1x1':  {h:1080, top:56,  bottom:44,  side:56, logo:150, hookMax:118, splitRatio:0.40, bigMax:200, pill:40, badge:64, legal:21, ctagap:16, bandpad:14, bandMin:0.34},
+  '4x5':  {h:1350, top:64,  bottom:54,  side:60, logo:156, hookMax:126, splitRatio:0.42, bigMax:210, pill:42, badge:66, legal:22, ctagap:18, bandpad:18, bandMin:0.36},
+  '9x16': {h:1920, top:250, bottom:380, side:64, logo:160, hookMax:134, splitRatio:0.45, bigMax:220, pill:46, badge:72, legal:24, ctagap:20, bandpad:24, bandMin:0.28},
+};
+const HOOK_MIN = 84;                       // hook must stay >= 3x the 28px context floor
+const CONTEXT_MIN = 28, CONTEXT_MAX = 46;
+
+function el(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+function measure(text, weight, px){
+  const m = el('span','measure',text); m.style.font = `${weight} ${px}px Rubik`; document.body.appendChild(m);
+  const w = m.getBoundingClientRect().width; m.remove(); return w;
+}
+function fit(lines, weight, maxPx, width){
+  const widest = Math.max(...lines.map(l => measure(l, weight, 100)));
+  return Math.min(maxPx, Math.floor(100 * width / widest));
+}
+function ctaUnit(S, F, dark){
+  const cta = el('div','cta');
+  const pill = el('div', dark ? 'pill dark' : 'pill', S.cta || 'הורידו את עבר');
+  pill.style.fontSize = F.pill+'px'; pill.style.padding = `${Math.round(F.pill*0.46)}px ${Math.round(F.pill*2.6)}px`;
+  const badges = el('div','badges');
+  const gp = el('img'); gp.src = S.assets.googleplay; gp.alt='';
+  const as = el('img'); as.src = S.assets.appstore; as.alt='';
+  badges.append(gp, as);                   // LTR row: Google Play left, App Store right
+  const legal = el('div','legal', S.legal); legal.style.fontSize = F.legal+'px';
+  cta.append(pill, badges, legal);
+  return cta;
+}
+function canvas(F, layout){
+  const c = el('div', 'canvas ' + layout); c.style.height = F.h+'px';
+  for (const [k,v] of Object.entries({side:F.side, top:F.top, bottom:F.bottom, logo:F.logo, badge:F.badge, ctagap:F.ctagap, bandpad:F.bandpad}))
+    c.style.setProperty('--'+k, v+'px');
+  return c;
+}
+function logoEl(S){ const l = el('img','logo'); l.src = S.assets.logo; l.alt=''; return l; }
+
+function buildScene(S, F, scale){
+  const c = canvas(F, 'scene');
+  const colW = 1080 - 2*F.side - (F.logo + 40);
+  const hookPx = Math.floor(fit(S.hook, 900, F.hookMax, colW) * scale);
+  const ctxPx = Math.max(CONTEXT_MIN, Math.min(CONTEXT_MAX, Math.floor(hookPx/3)));
+  const detPx = Math.max(24, Math.round(ctxPx*0.8));
+  const text = el('div','text');
+  const hook = el('div','hook'); hook.style.fontSize = hookPx+'px';
+  S.hook.forEach(l => hook.appendChild(el('span','l',l)));
+  text.appendChild(hook);
+  const warn = [];
+  if (S.context){ const x = el('div','context',S.context); x.style.fontSize = ctxPx+'px'; x.style.marginTop = Math.round(hookPx*0.22)+'px'; text.appendChild(x);
+    if (measure(S.context,700,ctxPx) > colW) warn.push('context wraps to two lines'); }
+  if (S.details){ const x = el('div','details',S.details); x.style.fontSize = detPx+'px'; x.style.marginTop = Math.round(ctxPx*0.35)+'px'; text.appendChild(x);
+    if (measure(S.details,500,detPx) > colW) warn.push('details wraps to two lines'); }
+  const band = el('div','band'); const img = el('img'); img.src = S.scene; img.alt=''; band.appendChild(img);
+  c.append(logoEl(S), text, band, ctaUnit(S, F, false));
+  const check = () => {
+    const cb = c.getBoundingClientRect(), cta = c.querySelector('.cta').getBoundingClientRect();
+    return band.getBoundingClientRect().height >= F.h*F.bandMin && cta.bottom <= cb.bottom - F.bottom + 2;
+  };
+  return {c, check, warn, sizes:{hook:hookPx, context:ctxPx, details:detPx}, min: hookPx >= HOOK_MIN};
+}
+
+function buildSplit(S, F, scale){
+  const c = canvas(F, 'split');
+  const topBg = S.top_color === 'green' ? 'bg-green' : 'bg-orange';
+  const botBg = S.top_color === 'green' ? 'bg-orange' : 'bg-green';
+  const topH = Math.round(F.h * F.splitRatio);
+  const top = el('div', 'half top '+topBg); top.style.height = topH+'px'; top.style.paddingTop = Math.round(F.top + F.logo*0.6)+'px';
+  const bot = el('div', 'half bottom '+botBg); bot.style.height = (F.h - topH)+'px';
+  bot.style.paddingTop = Math.round(F.h*0.03)+'px'; bot.style.paddingBottom = F.bottom+'px';
+  const w = 1080 - 2*F.side;
+  const big = Math.floor(Math.min(fit(S.top, 900, F.bigMax, w), fit(S.bottom, 900, F.bigMax, w)) * scale);
+  const tb = el('div','big'); tb.style.fontSize = big+'px'; S.top.forEach(l => tb.appendChild(el('span','l',l)));
+  top.append(tb, logoEl(S));
+  const bb = el('div','big'); bb.style.fontSize = big+'px'; S.bottom.forEach(l => bb.appendChild(el('span','l',l)));
+  bot.appendChild(bb);
+  const ctxPx = Math.max(CONTEXT_MIN, Math.min(CONTEXT_MAX, Math.floor(big/4)));
+  if (S.context){ const x = el('div','context',S.context); x.style.fontSize = ctxPx+'px'; x.style.textAlign='right'; x.style.marginTop = Math.round(big*0.16)+'px'; bot.appendChild(x); }
+  const spacer = el('div'); spacer.style.flex = '1 1 auto'; spacer.style.minHeight = Math.round(F.h*0.025)+'px'; bot.appendChild(spacer);
+  // Ink pill + white text on green; green pill + Ink text on orange. Never white text on Avar Green.
+  bot.appendChild(ctaUnit(S, F, botBg === 'bg-green'));
+  c.append(top, bot);
+  const check = () => {
+    const cb = c.getBoundingClientRect(), cta = c.querySelector('.cta').getBoundingClientRect();
+    return cta.bottom <= cb.bottom - F.bottom + 2 && tb.getBoundingClientRect().bottom <= top.getBoundingClientRect().bottom - 8;
+  };
+  return {c, check, warn:[], sizes:{big, context:ctxPx}, min: big >= HOOK_MIN*1.2};
+}
+
+(async () => {
+  const S = window.__SPEC__, F = FMT[S.format];
+  const result = {ok:true, warnings:[]};
+  try {
+    await Promise.all([400,500,700,800,900].map(w => document.fonts.load(`${w} 40px Rubik`, 'אבגד abc')));
+    const root = document.getElementById('root');
+    const layout = S.layout || 'scene';
+    let built = null;
+    for (let scale = 1.0; scale >= 0.55; scale -= 0.05) {   // shrink type until everything fits
+      root.innerHTML = '';
+      built = layout === 'scene' ? buildScene(S, F, scale) : buildSplit(S, F, scale);
+      if (S.preview_tag) built.c.appendChild(el('div','tag', S.preview_tag));
+      root.appendChild(built.c);
+      await Promise.all([...document.images].map(i => i.complete ? null : new Promise(r => { i.onload = r; i.onerror = r; })));
+      if (built.check()) break;
+    }
+    for (const i of document.images) if (!i.naturalWidth) throw new Error('image failed to load: ' + i.src);
+    if (!built.check()) throw new Error(`copy does not fit ${S.format} even at minimum size — shorten it`);
+    if (!built.min) throw new Error(`headline too long for ${S.format}: it only fits below the minimum size — shorten it or break the line`);
+    result.sizes = built.sizes; result.warnings = built.warn;
+  } catch (e) { result.ok = false; result.error = String(e.message || e); }
+  window.__RESULT__ = result;
+})();
+</script>
+</body>
+</html>
