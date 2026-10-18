@@ -67,7 +67,14 @@ def lint(spec):
 
 
 # --- assets ------------------------------------------------------------------
-def find_assets(standins):
+PLACEHOLDER_SVG = {
+    "logo": '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect width="300" height="300" rx="66" fill="#55D8CB"/><text x="150" y="170" font-family="sans-serif" font-size="44" text-anchor="middle" fill="#222">LOGO</text></svg>',
+    "appstore": '<svg xmlns="http://www.w3.org/2000/svg" width="250" height="83"><rect x="1" y="1" width="248" height="81" rx="13" fill="#fff" stroke="#999" stroke-dasharray="6 4" stroke-width="2"/><text x="125" y="50" font-family="sans-serif" font-size="20" text-anchor="middle" fill="#666">App Store badge</text></svg>',
+    "googleplay": '<svg xmlns="http://www.w3.org/2000/svg" width="250" height="83"><rect x="1" y="1" width="248" height="81" rx="13" fill="#fff" stroke="#999" stroke-dasharray="6 4" stroke-width="2"/><text x="125" y="50" font-family="sans-serif" font-size="20" text-anchor="middle" fill="#666">Google Play badge</text></svg>',
+}
+
+
+def find_assets(standins, allow_missing=False, tmp=None):
     found, missing = {}, []
     for key, names in ASSET_NAMES.items():
         hit = next((KIT / "assets" / n for n in names if (KIT / "assets" / n).exists()), None)
@@ -75,6 +82,10 @@ def find_assets(standins):
             hit = next((pathlib.Path(standins) / n for n in names if (pathlib.Path(standins) / n).exists()), None)
             if hit is not None:
                 found.setdefault("_standins", []).append(key)
+        if hit is None and allow_missing and tmp is not None:
+            hit = tmp / f"placeholder-{key}.svg"            # labeled box, never fake brand art
+            hit.write_text(PLACEHOLDER_SVG[key], encoding="utf-8")
+            found.setdefault("_standins", []).append(key)
         if hit is None:
             missing.append(key)
         else:
@@ -121,6 +132,8 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--formats", default="1x1,4x5,9x16")
     ap.add_argument("--standins", help="preview only: folder with stand-in logo/badges; renders get a PREVIEW tag")
+    ap.add_argument("--allow-missing", action="store_true",
+                    help="preview only: draw a labeled placeholder for a missing logo/badge; renders get a PREVIEW tag")
     a = ap.parse_args()
 
     spec_path = pathlib.Path(a.spec).resolve()
@@ -130,7 +143,8 @@ def main():
         print(json.dumps({"ok": False, "stage": "lint", "errors": errors}, ensure_ascii=False, indent=1))
         sys.exit(2)
 
-    assets, missing = find_assets(a.standins)
+    tmp = pathlib.Path(tempfile.mkdtemp(prefix="avar-render-"))
+    assets, missing = find_assets(a.standins, a.allow_missing, tmp)
     if missing:
         print(json.dumps({"ok": False, "stage": "assets", "missing": missing,
                           "fix": "put the real logo and official badges in pipeline/assets/"}, ensure_ascii=False))
@@ -138,7 +152,6 @@ def main():
 
     out = pathlib.Path(a.out).resolve()
     out.mkdir(parents=True, exist_ok=True)
-    tmp = pathlib.Path(tempfile.mkdtemp(prefix="avar-render-"))
     page_assets = {}
     for key in ("logo", "appstore", "googleplay"):
         p = assets[key]

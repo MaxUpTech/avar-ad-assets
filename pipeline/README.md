@@ -53,4 +53,5 @@ Put these in `assets/` (the renderer refuses to run without them):
 - `badge-appstore.svg|png` — official Apple "Download on the App Store" badge, unmodified
 - `badge-googleplay.svg|png` — official "Get it on Google Play" badge, unmodified
 
-`--standins DIR` renders previews with stand-in art and stamps them PREVIEW. Never publish those.
+`--allow-missing` draws a labeled placeholder box for a missing logo or badge, and `--standins DIR` uses stand-in art.
+Both stamp the render PREVIEW. Use them only for concept review; never upload or publish a PREVIEW render.
