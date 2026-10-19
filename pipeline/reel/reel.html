@@ -87,8 +87,10 @@ window.applySpec=function(sp){
   const set=(id,v)=>{ if(v!==undefined && v!==null) $(id).textContent=v; };
   set('s1a',sp.pain[0]); set('s1b',sp.pain[1]); set('s2a',sp.turn); set('s3a',sp.answer);
   set('s3b',sp.lines[0]); set('s3c',sp.lines[1]); set('s4a',sp.verdict[0]); set('s4b',sp.verdict[1]); set('e_sub',sp.end);
+  // measure the text itself (not the box: centered lines span the full width)
+  const textW=el=>{ const r=document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
   const fit=(id,max)=>{ const el=$(id); let f=parseFloat(el.style.fontSize)||parseFloat(getComputedStyle(el).fontSize); el.style.transform='none';
-    while(el.scrollWidth>max && f>60){ f-=4; el.style.fontSize=f+'px'; } };
+    while(textW(el)>max && f>60){ f-=4; el.style.fontSize=f+'px'; } };
   ['s1a','s1b','s3a','s3b','s3c'].forEach(id=>fit(id,936)); ['s2a','s4a','s4b'].forEach(id=>fit(id,980)); fit('e_sub',980);
 };
 window.seek=async function(t){
