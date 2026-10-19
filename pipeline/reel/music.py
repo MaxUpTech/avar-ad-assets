@@ -81,6 +81,30 @@ while t < DUR - 0.05:
     if beat % 2 == 0: add(pluck(r, 0.15), t + 3 * B / 4, 0.18, 0.4)
     beat += 1; t += B
 
+# lead hook over the drop: bright pluck melody, 8th notes, follows C G Am F
+MEL = [[72, 76, 79, 76, 74, 76, 72, 79], [71, 74, 79, 74, 71, 74, 76, 74],
+       [72, 76, 81, 76, 72, 76, 79, 76], [72, 77, 81, 77, 76, 77, 79, 84]]
+def lead(freq, length):
+    n = int(length * SR); t = np.arange(n) / SR
+    x = (2 * ((t * freq) % 1) - 1) * 0.5 + np.sign(np.sin(2 * np.pi * freq * t)) * 0.25
+    return x * np.minimum(1, t / 0.003) * np.exp(-t / 0.09)
+t = DROP; k = 0
+while t < DUR - 0.3:
+    bar = int((t - DROP) / (4 * B)) % 4; step = k % 8
+    f = 440 * 2 ** ((MEL[bar][step] - 69) / 12)
+    add(lead(f, B / 2), t, 0.16, 0.25 if step % 2 else -0.25)
+    t += B / 2; k += 1
+# tension hats in the queue part (16ths, quiet)
+t = 0.0
+while t < DROP - 0.05:
+    add(HAT, t, 0.08, 0.5); t += B / 4
+# sidechain pump: duck everything except kicks right after each beat in the drop
+pump = np.ones(N); t = DROP
+while t < DUR:
+    i = int(t * SR); j = min(N, i + int(0.18 * SR))
+    pump[i:j] = np.minimum(pump[i:j], 0.55 + 0.45 * np.linspace(0, 1, j - i) ** 0.6); t += B
+mix *= pump[:, None]
+for tt in np.arange(DROP, DUR - 0.05, B): add(KICK, tt, 1.0)
 # fade the tail, gentle sidechain-ish pump on non-kick content is skipped for simplicity
 fade = int(0.6 * SR); mix[-fade:] *= np.linspace(1, 0, fade)[:, None]
 mix /= np.max(np.abs(mix)) + 1e-9; mix *= 0.85

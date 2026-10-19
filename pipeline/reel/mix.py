@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 """Mix the music bed with voiceover lines (music ducks under the voice) and mux onto the silent reel.
-usage: mix.py SILENT.mp4 MUSIC.wav OUT.mp4 [VO.wav@START ...]   e.g. line1.wav@0.1 line2.wav@1.9"""
+usage: mix.py SILENT.mp4 MUSIC.wav OUT.mp4 [--sfx SFX.wav] [VO.wav@START ...]   e.g. line1.wav@0.1 line2.wav@1.9"""
 import subprocess, sys
-silent, music, out, *vo = sys.argv[1:]
+args = sys.argv[1:]
+sfx = None
+if "--sfx" in args:
+    k = args.index("--sfx"); sfx = args[k + 1]; del args[k:k + 2]
+silent, music, out, *vo = args
+if sfx:  # pre-mix music + sound effects into one bed (SFX slightly on top)
+    bed = out + ".bed.wav"
+    subprocess.check_call(["ffmpeg", "-v", "error", "-y", "-i", music, "-i", sfx, "-filter_complex",
+                           "[0:a]volume=0.8[m];[1:a]volume=1.0[s];[m][s]amix=inputs=2:normalize=0:duration=first[a]", "-map", "[a]", bed])
+    music = bed
 inputs = ["-i", silent, "-i", music]
 chains, labels = [], []
 for k, item in enumerate(vo):

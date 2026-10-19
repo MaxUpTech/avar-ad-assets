@@ -14,12 +14,18 @@ Only shot 3 is AI-generated; all type, logo, badges, CTA and legal are rendered 
 
 ```bash
 python3 pipeline/reel/render_reel.py clip.mp4 silent.mp4 --duration 12 --spec spec.json
-python3 pipeline/reel/music.py music.wav 12          # synthesized, royalty-free 128 BPM bed
-python3 pipeline/reel/mix.py silent.mp4 music.wav out.mp4 [vo1.wav@0.1 vo2.wav@1.9 ...]
+python3 pipeline/reel/music.py music.wav 12          # synthesized, royalty-free 128 BPM bed (tense queue → drop with lead hook)
+python3 pipeline/reel/sfx.py sfx.wav 12              # synthesized sound effects locked to the shot timeline
+python3 pipeline/reel/mix.py silent.mp4 music.wav out.mp4 --sfx sfx.wav
 python3 pipeline/reel/render_reel.py clip.mp4 x.mp4 --spec spec.json --preview 1.2,3.1,5.8,7.8,10   # stills for QA
 ```
 
 `spec.json`: `{"pain":["הרכב","בתור"],"turn":"ואתם?","answer":"בים","lines":["היום שלכם","הטסט שלנו"],"verdict":["הטסט?","כבר עבר"],"end":"אתם בבית. הרכב עובר"}`
 
 The clip is a 9:16 Kling animation of a vertical scene whose top ~35% is empty sky (room for type).
-`voice.json` holds the brand voice settings once chosen.
+No voiceover: Reels run on music + sound effects (see `voice.json`).
+
+Sonic kit (`sfx.py`): slam on every word, zip when the queue arrives, two short honks while it's stuck,
+whoosh on every cut, a sea/air wash when the day comes back, a rising swish while the checkmark draws,
+and the Avar "passed" chime (two notes up, E6→B6) when the check lands and when the logo pops.
+If you change shot timings in `reel.html`, change the `S` list in `sfx.py` to match.
