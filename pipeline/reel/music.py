@@ -3,13 +3,19 @@
 a riser, then a full upbeat drop when the day comes back. usage: music.py OUT.wav [duration]"""
 import sys, numpy as np, wave
 SR = 48000
-out = sys.argv[1]; DUR = float(sys.argv[2]) if len(sys.argv) > 2 else 12.0
-BPM = 128; B = 60 / BPM
+import argparse
+_ap = argparse.ArgumentParser(); _ap.add_argument("out"); _ap.add_argument("dur", nargs="?", type=float, default=12.0)
+_ap.add_argument("--bpm", type=float, default=128); _ap.add_argument("--drop", type=float, default=2.8)
+_ap.add_argument("--key", type=int, default=0, help="semitones up from C"); _ap.add_argument("--seed", type=int, default=0, help="0 = the original hook; other values write a new melody")
+_A = _ap.parse_args(); out = _A.out; DUR = _A.dur
+BPM = _A.bpm; B = 60 / BPM
 N = int(SR * DUR); mix = np.zeros((N, 2))
 rng = np.random.default_rng(7)
-DROP = 2.8  # seconds: the cut to the beach
+DROP = _A.drop  # seconds: the cut to the scene / the "day back" moment
 
 def add(sig, t, gain=1.0, pan=0.0):
+    if t < 0:   # cue starts before 0: keep only the audible tail
+        sig = sig[int(-t * SR):]; t = 0.0
     i = int(t * SR); j = min(N, i + len(sig))
     if i >= N: return
     s = sig[: j - i] * gain
@@ -68,7 +74,9 @@ add(riser, DROP - 1.0, 1.0)
 add(KICK, DROP, 1.2); add(hp_noise(int(0.6 * SR), 0.6) * env(int(0.6 * SR), 0.001, 0.15) * 0.4, DROP, 1.0)
 
 # --- part 2: the day back (DROP .. end): four-on-the-floor, claps, hats, bass plucks
-roots = [261.63, 196.00, 220.00, 174.61]  # C G Am F (bass an octave down below)
+KEY = 2 ** (_A.key / 12)
+PROGS = [[261.63, 196.00, 220.00, 174.61], [220.00, 174.61, 261.63, 196.00], [174.61, 261.63, 196.00, 220.00], [261.63, 220.00, 174.61, 196.00]]
+roots = [r * KEY for r in PROGS[_A.seed % 4]]  # bass an octave down below
 beat = 0
 t = DROP
 while t < DUR - 0.05:
@@ -88,6 +96,12 @@ def lead(freq, length):
     n = int(length * SR); t = np.arange(n) / SR
     x = (2 * ((t * freq) % 1) - 1) * 0.5 + np.sign(np.sin(2 * np.pi * freq * t)) * 0.25
     return x * np.minimum(1, t / 0.003) * np.exp(-t / 0.09)
+if _A.seed:
+    _r = np.random.default_rng(_A.seed); SCALE = [60, 62, 64, 67, 69, 72, 74, 76, 79, 81]
+    MEL = [[int(x) + _A.key for x in _r.choice(SCALE, 8)] for _ in range(4)]
+    for m in MEL: m[0] = 72 + _A.key  # land each bar on the tonic for a hooky feel
+else:
+    MEL = [[n + _A.key for n in bar] for bar in MEL]
 t = DROP; k = 0
 while t < DUR - 0.3:
     bar = int((t - DROP) / (4 * B)) % 4; step = k % 8

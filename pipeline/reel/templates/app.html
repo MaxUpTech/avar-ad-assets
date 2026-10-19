@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8">
+<link rel="stylesheet" href="fonts.css"><link rel="stylesheet" href="base.css">
+<style>
+/* "Watch it happen in the app": tap to book, the status timeline lights up step by step, a push lands */
+#A1{background:var(--mint)}
+.phone{position:absolute;left:220px;top:600px;width:640px;height:1120px;border:18px solid var(--ink);border-radius:80px;background:#fff;overflow:hidden}
+.notch{position:absolute;left:50%;top:14px;width:170px;height:34px;margin-left:-85px;background:var(--ink);border-radius:20px}
+.scr{position:absolute;inset:0;padding:110px 44px 40px}
+.ahead{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:44px}
+.ahead img{width:76px;height:76px}
+.big-btn{margin-top:300px;background:var(--green);border-radius:999px;font-weight:900;font-size:58px;text-align:center;padding:40px 0}
+.tap{position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(34,34,34,.25);left:50%;top:560px;margin-left:-60px;opacity:0}
+.steps{margin-top:40px;position:relative}
+.step{display:flex;align-items:center;gap:26px;height:142px;font-size:44px;font-weight:500;color:#9AA5A2}
+.dot{width:64px;height:64px;border-radius:50%;border:6px solid #CBD5D2;flex:none;display:grid;place-items:center;background:#fff}
+.rail{position:absolute;right:29px;top:74px;width:6px;height:568px;background:#E3EAE8}
+.railf{position:absolute;right:29px;top:74px;width:6px;height:0;background:var(--green)}
+.notif{position:absolute;left:30px;right:30px;top:-200px;background:var(--ink);color:#fff;border-radius:34px;padding:26px 30px;display:flex;gap:22px;align-items:center;z-index:5}
+.notif img{width:84px;height:84px;border-radius:20px}
+.notif b{font-size:42px;display:block} .notif span{font-size:30px;opacity:.75}
+</style></head>
+<body>
+<div class="layer" id="A1">
+  <div class="w" id="h1" style="top:300px;font-size:150px">אתם בבית</div>
+  <div class="w" id="h2" style="top:460px;font-size:150px;opacity:0">הרכב עובר</div>
+  <div class="w" id="v" style="top:330px;font-size:150px;opacity:0">הטסט? כבר עבר</div>
+  <div class="phone" id="ph"><div class="notch"></div>
+    <div class="scr" id="s0"><div class="ahead"><span>עבר</span><img src="logo.png" alt=""></div><div class="big-btn" id="btn">הזמינו טסט</div></div>
+    <div class="scr" id="s1" style="opacity:0"><div class="ahead"><span id="ttl">הטסט שלכם</span><img src="logo.png" alt=""></div>
+      <div class="steps"><div class="rail"></div><div class="railf" id="railf"></div><div id="rows"></div></div></div>
+    <div class="tap" id="tap"></div>
+    <div class="notif" id="nt"><img src="logo.png" alt=""><div><b id="ntt">הרכב בדרך חזרה</b><span>עבר · עכשיו</span></div></div>
+  </div>
+</div>
+<script src="base.js"></script>
+<script>
+const B = 60 / 124; window.DURATION = 12;
+window.SHOTS = [['A1', 0], ['END', 18 * B]];
+const T = Object.fromEntries(window.SHOTS);
+const ST = [2.0, 2.8, 3.6, 4.4, 5.2];   // each status step completes
+let STEPS = ['מחפשים בוחן', 'בודקים מסמכים', 'איסוף הרכב', 'טיפול וטסט', 'החזרה וסיום'];
+const CHECK = '<svg viewBox="0 0 40 40" width="34" height="34"><path class="check" d="M8 21 L17 29 L32 11" stroke="#222" stroke-width="6"/></svg>';
+function buildRows() { $('rows').innerHTML = STEPS.map((s, i) => `<div class="step" id="r${i}"><div class="dot" id="d${i}"></div><div>${s}</div></div>`).join(''); }
+buildRows();
+window.applySpec = sp => {
+  if (sp.headline) { set('h1', sp.headline[0]); set('h2', sp.headline[1]); }
+  if (sp.steps) { STEPS = sp.steps; buildRows(); }
+  set('btn', sp.button); set('ntt', sp.notif); set('v', sp.verdict); set('e_sub', sp.end);
+  ['h1', 'h2', 'v'].forEach(id => fit(id, 936));
+};
+cue('slam', 0.05); cue('slam', 0.45); cue('whoosh', 0.55, 0.8); cue('tap', 1.25, 1.0);
+ST.forEach(s => cue('tick', s, 0.9)); cue('notif', 6.0, 1.0); cue('slam', 7.0, 1.1); cue('ding', 7.4, 1.0);
+endCues(T.END, B);
+window.render = async t => {
+  const shot = layers(t);
+  slam($('h1'), t, 0.05); slam($('h2'), t, 0.45);
+  if (t > 7.0) { out($('h1'), t, 6.9, 0.15); out($('h2'), t, 6.9, 0.15); }
+  slam($('v'), t, 7.0, 0.3);
+  // phone slides up
+  const p = eo(prog(t, 0.55, 1.0)); $('ph').style.transform = `translateY(${(1 - p) * 1300}px) rotate(${(1 - p) * -6}deg)`;
+  // tap the button, then the status screen
+  const tp = prog(t, 1.2, 1.55); $('tap').style.opacity = tp > 0 && tp < 1 ? 0.9 * (1 - tp) : 0; $('tap').style.transform = `scale(${0.4 + 1.4 * tp})`;
+  $('btn').style.transform = `scale(${1 - 0.06 * Math.sin(Math.PI * clamp(tp * 2))})`;
+  const sw = eo(prog(t, 1.5, 1.8)); $('s0').style.opacity = 1 - sw; $('s1').style.opacity = sw; $('s1').style.transform = `translateX(${(1 - sw) * -120}px)`;
+  // steps: grey -> orange (in progress, pulsing) -> green with a check
+  STEPS.forEach((_, i) => {
+    const d = $('d' + i), r = $('r' + i), start = i ? ST[i - 1] : 1.8;
+    if (t >= ST[i]) { d.style.background = 'var(--green)'; d.style.borderColor = 'var(--green)'; d.innerHTML = CHECK; r.style.color = 'var(--ink)'; r.style.fontWeight = 700; d.style.transform = `scale(${0.7 + 0.3 * back(prog(t, ST[i], ST[i] + 0.25))})`; }
+    else if (t >= start) { d.style.background = '#fff'; d.style.borderColor = 'var(--orange)'; d.innerHTML = ''; r.style.color = 'var(--ink)'; d.style.transform = `scale(${1 + 0.12 * Math.sin(t * 14)})`; }
+    else { d.style.background = '#fff'; d.style.borderColor = '#CBD5D2'; d.innerHTML = ''; r.style.color = '#9AA5A2'; d.style.transform = 'none'; }
+  });
+  const done = ST.filter(s => t >= s).length; $('railf').style.height = (Math.max(0, done - 1) / 4 * 568) + 'px';
+  // push notification drops in
+  const n = t < 6.0 ? 0 : back(prog(t, 6.0, 6.35)); $('nt').style.transform = `translateY(${n * 330}px)`;
+  // phone does a happy bounce on the verdict
+  if (t > 7.0) { const b = Math.sin(Math.PI * prog(t, 7.0, 7.35)); $('ph').style.transform = `scale(${1 + 0.04 * b})`; }
+  endCard(t, T.END, B);
+  $('logo').style.visibility = shot === 'END' ? 'hidden' : 'visible';
+};
+</script></body></html>

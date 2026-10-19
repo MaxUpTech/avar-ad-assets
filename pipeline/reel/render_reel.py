@@ -9,7 +9,8 @@ HERE = os.path.join(KIT, "build")  # scratch: assets, frames, clip frames (gitig
 os.makedirs(HERE, exist_ok=True)
 def _prep():
     from PIL import Image
-    shutil.copy(os.path.join(KIT, "reel.html"), HERE)
+    for f in os.listdir(os.path.join(KIT, "templates")):
+        shutil.copy(os.path.join(KIT, "templates", f), HERE)
     fonts = os.path.join(HERE, "fonts")
     if not os.path.exists(fonts): shutil.copytree(os.path.join(KIT, "..", "fonts"), fonts)
     css = open(os.path.join(KIT, "..", "template.html"), encoding="utf-8").read()
@@ -26,6 +27,7 @@ ap.add_argument("--duration", type=float, default=13.0)
 ap.add_argument("--fps", type=int, default=30)
 ap.add_argument("--preview", default="")
 ap.add_argument("--spec", default="")
+ap.add_argument("--template", default="queue", help="queue | day | app | list")
 a = ap.parse_args()
 
 cf = os.path.join(HERE, "clipframes")
@@ -41,12 +43,16 @@ async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch()
         pg = await b.new_page(viewport={"width": 1080, "height": 1920}, device_scale_factor=1)
-        await pg.goto("file://" + os.path.join(HERE, "reel.html"))
+        await pg.goto("file://" + os.path.join(HERE, a.template + ".html"))
         await pg.evaluate("document.fonts.ready")
         await pg.evaluate(f"window.CLIP_FRAMES={nframes}; window.CLIP_FPS={a.fps}")
         if a.spec:
             import json as _j
             await pg.evaluate("sp => window.applySpec(sp)", _j.load(open(a.spec)))
+        import json as _j2
+        cues = await pg.evaluate("window.SFX || null")
+        if cues is not None and not a.preview:   # sound cues for sfx.py --events
+            _j2.dump(cues, open(a.out + ".cues.json", "w"))
         if a.preview:
             for t in a.preview.split(","):
                 await pg.evaluate(f"window.seek({float(t)})")

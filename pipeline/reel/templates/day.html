@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8">
+<link rel="stylesheet" href="fonts.css"><link rel="stylesheet" href="base.css">
+<style>
+/* "The stolen day": a clock races through the day while a bar fills with queue chips, then rewinds */
+#D1{background:var(--orange)} #D2{background:var(--ink)} #D3{background:var(--screen)}
+.clockd{position:absolute;left:0;right:0;top:640px;text-align:center;font-weight:900;font-size:250px;letter-spacing:4px;direction:ltr;font-variant-numeric:tabular-nums}
+.bar{position:absolute;left:90px;right:90px;top:1000px;height:70px;border:8px solid var(--ink);border-radius:40px;overflow:hidden;background:rgba(255,255,255,.25)}
+.fill{position:absolute;top:0;bottom:0;right:0;background:var(--ink);width:0}
+.chip{position:absolute;top:1110px;background:var(--ink);color:#fff;font-weight:800;font-size:44px;padding:14px 28px;border-radius:999px;white-space:nowrap;transform-origin:50% 50%}
+.badge{position:absolute;left:390px;top:1180px;width:300px;height:300px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+</style></head>
+<body>
+<div class="layer" id="D1">
+  <div class="w" id="k" style="top:380px;font-size:120px">טסט שנתי</div>
+  <div class="clockd" id="clk">08:00</div>
+  <div class="bar"><div class="fill" id="fill"></div></div>
+  <div class="chip" id="c0" style="right:90px">נסיעה</div>
+  <div class="chip" id="c1" style="right:300px">תור</div>
+  <div class="chip" id="c2" style="right:470px">עוד תור</div>
+  <div class="chip" id="c3" style="right:120px;top:1220px">המתנה</div>
+  <div class="chip" id="c4" style="right:420px;top:1220px">חזרה</div>
+  <div class="c" id="big" style="top:1420px;font-size:200px">יום שלם</div>
+</div>
+<div class="layer" id="D2">
+  <div class="clockd" id="clk2" style="color:#fff;top:560px">16:30</div>
+  <div class="c" id="turn" style="top:960px;font-size:240px;color:#fff">או...</div>
+</div>
+<div class="layer" id="D3">
+  <img class="clip" id="clip" alt="">
+  <div class="w" id="ans" style="top:300px;font-size:190px">תמשיכו לחקור</div>
+  <div class="w" id="ln" style="top:520px;font-size:110px">הטסט? כבר עבר</div>
+</div>
+<script src="base.js"></script>
+<script>
+const B = 60 / 120; window.DURATION = 12;
+window.SHOTS = [['D1', 0], ['D2', 9 * B], ['D3', 11 * B], ['END', 18 * B]];
+const T = Object.fromEntries(window.SHOTS);
+const CH = [1.0, 1.7, 2.4, 3.0, 3.6];
+let FROM = 8 * 60, TO = 16 * 60 + 30;
+window.applySpec = sp => {
+  set('k', sp.kicker); (sp.chips || []).forEach((c, i) => set('c' + i, c)); set('big', sp.big); set('turn', sp.turn);
+  set('ans', sp.answer); set('ln', sp.line); set('e_sub', sp.end);
+  ['k', 'ans', 'ln'].forEach(id => fit(id, 936)); ['big', 'turn'].forEach(id => fit(id, 980));
+};
+// sound cues
+cue('slam', 0.05); for (const c of CH) cue('pop', c, 0.8); cue('slam', 3.95, 1.1); cue('honk', 3.4, 0.4);
+cue('rewind', T.D2 - 0.05, 1.0); cue('slam', T.D2 + 0.25, 1.0);
+cue('whoosh', T.D3 - 0.22, 0.9); cue('slam', T.D3 + 0.02, 1.1); cue('wash', T.D3 + 0.1, 0.4); cue('swish', T.D3 + 1.0, 0.7); cue('ding', T.D3 + 1.45, 1.0);
+endCues(T.END, B);
+const hhmm = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math.floor(m % 60)).padStart(2, '0');
+window.render = async t => {
+  const shot = layers(t);
+  // shot 1: the day burns away
+  slam($('k'), t, 0.05);
+  const p = eio(prog(t, 0.4, 3.9)); $('clk').textContent = hhmm(FROM + (TO - FROM) * p);
+  $('clk').style.transform = `scale(${1 + 0.04 * Math.sin(t * 25) * (t < 3.9 ? 1 : 0)})`;
+  $('fill').style.width = (p * 100) + '%';
+  CH.forEach((c, i) => pop($('c' + i), t, c, 0.3));
+  slam($('big'), t, 3.95, 0.3);
+  // shot 2: rewind
+  const r = eio(prog(t, T.D2, T.D2 + 0.7)); $('clk2').textContent = hhmm(TO - (TO - FROM) * r);
+  $('clk2').style.transform = `rotate(${-8 * Math.sin(r * Math.PI * 3)}deg)`;
+  slam($('turn'), t, T.D2 + 0.25, 0.3);
+  // shot 3: the day back
+  if (shot === 'D3') await showClip(t, T.D3, $('clip'));
+  slam($('ans'), t, T.D3 + 0.02, 0.3); rise($('ln'), t, T.D3 + 1.0, 0.3);
+  endCard(t, T.END, B);
+  $('logo').style.visibility = shot === 'END' ? 'hidden' : 'visible';
+};
+</script></body></html>

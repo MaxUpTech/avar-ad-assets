@@ -1,0 +1,18 @@
+:root{--green:#55D8CB;--ink:#222222;--mint:#E7F9F6;--teal:#2BA89A;--screen:#FAFAFA;--orange:#EE7E38}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000}
+body{font-family:Rubik,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+.layer{position:absolute;inset:0;overflow:hidden;visibility:hidden}
+.logo{position:absolute;left:64px;top:150px;width:150px;height:150px;z-index:9}
+.w{position:absolute;right:72px;font-weight:900;line-height:1;white-space:nowrap;text-align:right;transform-origin:100% 50%}
+.c{position:absolute;left:0;right:0;text-align:center;font-weight:900;line-height:1;white-space:nowrap;transform-origin:50% 50%}
+img.clip{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:50% 60%}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:20;pointer-events:none}
+/* end card */
+#END{background:var(--mint)}
+.endwrap{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center}
+.pill{background:var(--green);color:var(--ink);font-weight:800;font-size:72px;border-radius:999px;padding:32px 90px;line-height:1;white-space:nowrap}
+.badges{display:flex;direction:ltr;gap:26px;align-items:center}
+.badges img{height:104px;width:auto;display:block}
+.legal{font-weight:400;font-size:30px;opacity:.8;white-space:nowrap}
+.check{fill:none;stroke-linecap:round;stroke-linejoin:round}

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Synthesize the Reel's sound-effects layer, locked to the reel.html timeline (128 BPM grid).
-Royalty-free: every sound is generated here. usage: sfx.py OUT.wav [duration]
+Royalty-free: every sound is generated here. usage: sfx.py OUT.wav [duration] [--events CUES.json]  (cues come from render_reel.py for the day/app/list templates)
 
 Sound map (the brand's sonic kit):
   slam    - punchy thud + air for every word that slams in
@@ -16,7 +16,11 @@ import sys, wave
 import numpy as np
 
 SR = 48000
-OUT = sys.argv[1]; DUR = float(sys.argv[2]) if len(sys.argv) > 2 else 12.0
+args = sys.argv[1:]
+EVENTS = None
+if "--events" in args:
+    k = args.index("--events"); EVENTS = args[k + 1]; del args[k:k + 2]
+OUT = args[0]; DUR = float(args[1]) if len(args) > 1 else 12.0
 B = 60 / 128
 S = [0, 4 * B, 6 * B, 14 * B, 18 * B]      # shot starts, same as reel.html
 N = int(SR * DUR); mix = np.zeros((N, 2))
@@ -88,6 +92,33 @@ def ding():  # the Avar "passed" chime: E6 then B6, bright and quick
 def pop():
     t = t_(0.09); f = 900 * np.exp(-t * 30) + 300
     return np.sin(2 * np.pi * np.cumsum(f) / SR) * env(len(t), 0.0008, 0.03) * 0.6
+
+def tap():
+    t = t_(0.05); return np.sin(2 * np.pi * 1800 * t) * env(len(t), 0.0003, 0.008) * 0.8 + hp(rng.standard_normal(len(t)), 4000) * env(len(t), 0.0003, 0.004) * 0.4
+def tick():
+    t = t_(0.12); a = bell(1567.98, 0.12, 0.5)[: len(t)]
+    return a + np.sin(2 * np.pi * 880 * t) * env(len(t), 0.001, 0.03) * 0.3
+def notif():
+    out = np.zeros(int(0.7 * SR)); a = bell(987.77, 0.5, 0.7); b = bell(1479.98, 0.6, 0.6)
+    out[: len(a)] += a; o = int(0.12 * SR); out[o: o + len(b)] += b[: len(out) - o]; return out * 0.5
+def rewind(length=0.7):
+    t = t_(length); f = 1400 * (1 - t / length) ** 2 + 80
+    x = np.sign(np.sin(2 * np.pi * np.cumsum(f) / SR)) * 0.15 + lp(rng.standard_normal(len(t)), 2500) * 0.3
+    return x * np.sin(np.pi * t / length) ** 0.5
+def scribble(length=0.32):
+    t = t_(length); n = hp(rng.standard_normal(len(t)), 2000)
+    return n * (0.5 + 0.5 * np.sign(np.sin(2 * np.pi * 22 * t))) * np.sin(np.pi * t / length) * 0.5
+GEN = {"slam": slam, "zip": zip_, "honk": honk, "whoosh": whoosh, "wash": lambda: wash(2.4), "swish": lambda: swish(0.45),
+       "ding": ding, "pop": pop, "tap": tap, "tick": tick, "notif": notif, "rewind": rewind, "scribble": scribble}
+if EVENTS:
+    import json
+    for kind, at, gain in json.load(open(EVENTS)):
+        add(GEN[kind](), max(0.0, at), gain)
+    mix /= np.max(np.abs(mix)) + 1e-9; mix *= 0.9
+    with wave.open(OUT, "wb") as w:
+        w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
+        w.writeframes((mix * 32767).astype(np.int16).tobytes())
+    print(OUT); sys.exit(0)
 
 # --- shot 1: the queue (pain)
 add(slam(), 0.02, 0.9); add(slam(), B, 0.9)

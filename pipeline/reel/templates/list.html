@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8">
+<link rel="stylesheet" href="fonts.css"><link rel="stylesheet" href="base.css">
+<style>
+/* "Things you didn't do today": a checklist of chores gets struck out, then the day you got back */
+#L1{background:var(--screen)} #L2{background:var(--screen)}
+.item{position:absolute;right:72px;font-weight:800;font-size:120px;line-height:1;white-space:nowrap}
+.strike{position:absolute;right:-20px;top:52%;height:16px;background:var(--orange);border-radius:8px;width:0}
+.x{position:absolute;left:84px;font-weight:900;font-size:120px;color:var(--orange)}
+.badge{position:absolute;left:84px;top:300px;width:200px;height:200px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+</style></head>
+<body>
+<div class="layer" id="L1">
+  <div class="w" id="k" style="top:330px;font-size:170px">היום לא</div>
+  <div class="item" id="i0" style="top:640px"><span id="t0">נסעתם למכון</span><div class="strike" id="s0"></div></div>
+  <div class="item" id="i1" style="top:860px"><span id="t1">עמדתם בתור</span><div class="strike" id="s1"></div></div>
+  <div class="item" id="i2" style="top:1080px"><span id="t2">ביטלתם פגישה</span><div class="strike" id="s2"></div></div>
+  <div class="c" id="still" style="top:1400px;font-size:150px">ובכל זאת</div>
+</div>
+<div class="layer" id="L2">
+  <img class="clip" id="clip" alt="">
+  <div class="w" id="v1" style="top:300px;font-size:180px">הטסט?</div>
+  <div class="w" id="v2" style="top:500px;font-size:180px">כבר עבר</div>
+  <div class="badge" id="bd"><svg viewBox="0 0 120 120" width="130" height="130"><path class="check" id="ck" d="M24 64 L50 90 L98 34" stroke="#222" stroke-width="16"/></svg></div>
+</div>
+<script src="base.js"></script>
+<script>
+const B = 60 / 112; window.DURATION = 12;
+window.SHOTS = [['L1', 0], ['L2', 10 * B], ['END', 18 * B]];
+const T = Object.fromEntries(window.SHOTS);
+const IT = [0.75, 1.85, 2.95];   // each line slams in; its strike draws 0.45s later
+window.applySpec = sp => {
+  set('k', sp.kicker); (sp.items || []).forEach((x, i) => set('t' + i, x)); set('still', sp.turn);
+  if (sp.verdict) { set('v1', sp.verdict[0]); set('v2', sp.verdict[1]); } set('e_sub', sp.end);
+  ['k', 't0', 't1', 't2', 'v1', 'v2'].forEach(id => fit(id, 936)); fit('still', 980);
+  [0, 1, 2].forEach(i => $('s' + i).dataset.w = textW($('t' + i)) + 40);
+};
+cue('slam', 0.05); IT.forEach(a => { cue('slam', a, 0.8); cue('scribble', a + 0.45, 1.0); }); cue('slam', 4.1, 1.0);
+cue('whoosh', T.L2 - 0.22, 0.9); cue('slam', T.L2 + 0.02, 1.1); cue('slam', T.L2 + B, 1.0); cue('swish', T.L2 + 1.4, 0.7); cue('ding', T.L2 + 1.85, 1.0);
+endCues(T.END, B);
+window.render = async t => {
+  const shot = layers(t);
+  slam($('k'), t, 0.05);
+  IT.forEach((a, i) => { slam($('i' + i), t, a, 0.28); const s = $('s' + i); s.style.width = (eo(prog(t, a + 0.45, a + 0.75)) * (+s.dataset.w || 700)) + 'px'; });
+  slam($('still'), t, 4.1, 0.3);
+  if (shot === 'L2') await showClip(t, T.L2, $('clip'));
+  slam($('v1'), t, T.L2 + 0.02); slam($('v2'), t, T.L2 + B);
+  pop($('bd'), t, T.L2 + 1.4, 0.3); const ck = $('ck'); ck.style.strokeDasharray = 120; ck.style.strokeDashoffset = 120 * (1 - eo(prog(t, T.L2 + 1.5, T.L2 + 1.85)));
+  endCard(t, T.END, B);
+  $('logo').style.visibility = shot === 'END' ? 'hidden' : 'visible';
+};
+</script></body></html>
